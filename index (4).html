@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SupplyFlow Optimizer</title><link rel="stylesheet" href="style.css"><script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<div class="app-shell">
+<aside class="sidebar">
+  <div class="brand"><div class="brand-mark">SF</div><div><strong>SupplyFlow</strong><small>OPTIMIZER</small></div></div>
+  <div class="workspace-label">WORKSPACE</div>
+  <nav id="nav">
+    <button class="nav-item active" data-page="dashboard"><span>▦</span> Dashboard</button>
+    <button class="nav-item" data-page="inventory"><span>▤</span> Inventory</button>
+    <button class="nav-item" data-page="orders"><span>▣</span> Orders</button>
+    <button class="nav-item" data-page="customer"><span>🛍</span> Customer Portal</button>
+    <button class="nav-item" data-page="routes"><span>⌁</span> Route Optimizer</button>
+    <button class="nav-item" data-page="forecast"><span>⌁</span> Demand Forecast</button>
+    <button class="nav-item" data-page="reports"><span>▥</span> Reports & Alerts</button>
+  </nav>
+  <div class="sidebar-bottom"><div class="status-dot"></div><div><strong>Demo workspace</strong><small>Data saved in this browser</small></div></div>
+</aside>
+<main class="main">
+<header class="topbar"><div><div class="eyebrow" id="page-eyebrow">OVERVIEW</div><h1 id="page-title">Dashboard</h1></div><div class="top-actions"><span class="today" id="today-label"></span><button class="button button-light" id="reset-demo">Reset demo data</button></div></header>
+
+<section id="page-dashboard" class="page active">
+  <div class="welcome-row"><div><h2>Supply chain at a glance</h2><p>Monitor stock, orders, deliveries, and demand from one place.</p></div><button class="button button-primary" data-go="customer">🛍 Shop products</button></div>
+  <div class="metric-grid">
+    <article class="metric-card"><div class="metric-top"><span>Total SKUs</span><span class="metric-icon blue">▤</span></div><div class="metric-value" id="metric-skus">—</div><div class="metric-note">Products tracked in inventory</div></article>
+    <article class="metric-card"><div class="metric-top"><span>Inventory units</span><span class="metric-icon violet">▦</span></div><div class="metric-value" id="metric-units">—</div><div class="metric-note">Units currently in stock</div></article>
+    <article class="metric-card"><div class="metric-top"><span>Open orders</span><span class="metric-icon orange">▣</span></div><div class="metric-value" id="metric-orders">—</div><div class="metric-note">Pending, processing or shipped</div></article>
+    <article class="metric-card"><div class="metric-top"><span>Low-stock items</span><span class="metric-icon red">!</span></div><div class="metric-value" id="metric-low">—</div><div class="metric-note">At or below reorder level</div></article>
+  </div>
+  <div class="dashboard-grid">
+    <article class="panel chart-panel"><div class="panel-heading"><div><h3>Inventory by category</h3><p>Current units grouped by product category</p></div><span class="panel-tag">LIVE DATA</span></div><div class="chart-wrap"><canvas id="category-chart"></canvas></div></article>
+    <article class="panel"><div class="panel-heading"><div><h3>Action required</h3><p>Items that may need attention</p></div><button class="text-button" data-go="reports">View all</button></div><div id="dashboard-alerts" class="alert-list"></div></article>
+    <article class="panel wide-panel"><div class="panel-heading"><div><h3>Recent orders</h3><p>Latest activity in your workspace, including customer orders</p></div><button class="text-button" data-go="orders">All orders →</button></div><div class="table-scroll"><table><thead><tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th></tr></thead><tbody id="recent-orders"></tbody></table></div></article>
+  </div>
+</section>
+
+<section id="page-inventory" class="page">
+  <div class="section-toolbar"><div><h2>Inventory management</h2><p>Add products and keep stock levels accurate.</p></div><button class="button button-primary" id="add-product-btn">＋ Add product</button></div>
+  <div class="filter-row"><input id="inventory-search" class="search-input" placeholder="Search product, SKU, or category…"><select id="inventory-filter"><option value="all">All stock levels</option><option value="low">Low stock only</option><option value="healthy">Healthy stock only</option></select><button class="button button-light" id="export-inventory">Export CSV</button></div>
+  <div class="panel"><div class="table-scroll"><table><thead><tr><th>Product</th><th>SKU</th><th>Category</th><th>Unit price</th><th>In stock</th><th>Reorder level</th><th>Status</th><th>Actions</th></tr></thead><tbody id="inventory-table"></tbody></table></div><div class="table-footer" id="inventory-count"></div></div>
+</section>
+
+<section id="page-orders" class="page">
+  <div class="section-toolbar"><div><h2>Order management</h2><p>View customer orders and track their status.</p></div><button class="button button-primary" id="add-order-btn">＋ Staff order</button></div>
+  <div class="info-banner"><strong>Order sources:</strong> Orders can be created by staff here or submitted by customers from the Customer Portal. Customer orders appear in this list automatically.</div>
+  <div class="filter-row"><input id="order-search" class="search-input" placeholder="Search order ID or customer…"><select id="order-filter"><option value="all">All statuses</option><option>Pending</option><option>Processing</option><option>Shipped</option><option>Delivered</option><option>Cancelled</option></select></div>
+  <div class="panel"><div class="table-scroll"><table><thead><tr><th>Order ID</th><th>Customer</th><th>Order date</th><th>Items</th><th>Total</th><th>Status</th><th>Update status</th></tr></thead><tbody id="orders-table"></tbody></table></div><div class="table-footer" id="orders-count"></div></div>
+</section>
+
+<section id="page-customer" class="page">
+  <div class="section-toolbar"><div><h2>Customer order portal</h2><p>Browse products, add quantities to a cart and submit an order.</p></div><span class="panel-tag">CUSTOMER VIEW</span></div>
+  <div class="customer-layout"><div>
+    <div class="customer-welcome"><div><span class="eyebrow">WELCOME TO SUPPLYFLOW</span><h2>Order your supplies</h2><p>Choose items and quantities. Stock availability is updated when you place your order.</p></div><div class="customer-bag">🛍</div></div>
+    <div class="filter-row"><input id="customer-search" class="search-input" placeholder="Search products…"><select id="customer-category"><option value="all">All categories</option></select></div>
+    <div id="customer-products" class="customer-products"></div>
+  </div><aside class="panel cart-panel"><div class="panel-heading"><div><h3>Your cart</h3><p id="cart-count">0 items</p></div><span class="metric-icon blue">🛒</span></div>
+    <div id="customer-cart" class="cart-items"><div class="empty-small">Your cart is empty. Add a product to begin.</div></div>
+    <div class="cart-total"><span>Order total</span><strong id="cart-total">₹0.00</strong></div><button class="button button-primary full-button" id="checkout-btn">Proceed to checkout</button><p class="helper-text">Demo checkout only. No payment is collected.</p>
+  </aside></div>
+</section>
+
+<section id="page-routes" class="page">
+  <div class="section-toolbar"><div><h2>Route optimizer</h2><p>Find a shorter visit sequence for selected delivery stops.</p></div><span class="panel-tag">DEMO DISTANCES</span></div>
+  <div class="route-layout"><article class="panel"><div class="panel-heading"><div><h3>Delivery stops</h3><p>Select stops to include in the route.</p></div></div><div id="route-stop-list" class="stop-list"></div><button class="button button-primary full-button" id="optimize-route">Optimize delivery sequence</button><p class="helper-text">Sample coordinates and nearest-neighbour heuristic; no live traffic or GPS.</p></article>
+  <article class="panel route-result"><div class="panel-heading"><div><h3>Optimization result</h3><p>Compare the original and suggested order.</p></div></div><div id="route-empty" class="empty-state"><div class="empty-icon">⌁</div><strong>Your route result will appear here</strong><p>Select at least two stops, then optimize the route.</p></div><div id="route-output" hidden></div></article></div>
+</section>
+
+<section id="page-forecast" class="page">
+  <div class="section-toolbar"><div><h2>Demand forecasting</h2><p>Estimate next-month demand from recent monthly sales.</p></div><button class="button button-primary" id="run-forecast">↻ Run forecast</button></div>
+  <div class="info-banner"><strong>Method:</strong> three-month moving average using sample monthly demand. This is a simple baseline, not a trained machine-learning model.</div>
+  <div class="panel chart-panel forecast-chart"><div class="panel-heading"><div><h3>Historical demand and forecast</h3><p>Sample monthly demand versus estimated next month</p></div><span class="panel-tag">MOVING AVERAGE</span></div><div class="chart-wrap"><canvas id="forecast-chart"></canvas></div></div>
+  <div class="panel"><div class="panel-heading"><div><h3>Replenishment recommendations</h3><p>Suggested quantities based on forecast and current stock</p></div></div><div class="table-scroll"><table><thead><tr><th>Product</th><th>Current stock</th><th>Forecast demand</th><th>Suggested reorder</th><th>Recommendation</th></tr></thead><tbody id="forecast-table"></tbody></table></div></div>
+</section>
+
+<section id="page-reports" class="page">
+  <div class="section-toolbar"><div><h2>Reports & alerts</h2><p>Review operational issues and export data for reporting.</p></div><button class="button button-light" id="export-orders">Export orders CSV</button></div>
+  <div class="metric-grid small-metrics"><article class="metric-card"><div class="metric-top"><span>Inventory value</span><span class="metric-icon blue">₹</span></div><div class="metric-value" id="report-value">—</div><div class="metric-note">Stock quantity × unit price</div></article><article class="metric-card"><div class="metric-top"><span>Delivered orders</span><span class="metric-icon violet">✓</span></div><div class="metric-value" id="report-delivered">—</div><div class="metric-note">Orders marked delivered</div></article><article class="metric-card"><div class="metric-top"><span>Estimated order value</span><span class="metric-icon orange">₹</span></div><div class="metric-value" id="report-order-value">—</div><div class="metric-note">All orders excluding cancelled</div></article></div>
+  <div class="panel"><div class="panel-heading"><div><h3>All alerts</h3><p>Low inventory and open-order reminders</p></div><span class="panel-tag" id="alert-count-tag">0 ALERTS</span></div><div id="all-alerts" class="alert-list"></div></div>
+</section>
+</main></div>
+
+<div class="modal-backdrop" id="modal-backdrop" hidden><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"><div class="modal-heading"><div><h2 id="modal-title">Add product</h2><p id="modal-subtitle">Enter the details below.</p></div><button class="icon-button" id="modal-close" aria-label="Close">×</button></div>
+<form id="product-form"><input type="hidden" id="product-id"><label>Product name<input id="product-name" required maxlength="70" placeholder="e.g. Packing boxes"></label><div class="form-grid"><label>SKU<input id="product-sku" required maxlength="24" placeholder="e.g. PKG-101"></label><label>Category<input id="product-category" required maxlength="40" placeholder="e.g. Packaging"></label></div><div class="form-grid"><label>Unit price (₹)<input id="product-price" type="number" min="0" step="0.01" required></label><label>Current stock<input id="product-stock" type="number" min="0" step="1" required></label></div><label>Reorder level<input id="product-reorder" type="number" min="0" step="1" required></label><div class="form-actions"><button type="button" class="button button-light" id="product-cancel">Cancel</button><button class="button button-primary" type="submit">Save product</button></div></form></div></div>
+
+<div class="modal-backdrop" id="order-modal-backdrop" hidden><div class="modal" role="dialog" aria-modal="true" aria-labelledby="order-modal-title"><div class="modal-heading"><div><h2 id="order-modal-title">Create staff order</h2><p>Create a customer order from available stock.</p></div><button class="icon-button" id="order-modal-close" aria-label="Close">×</button></div>
+<form id="order-form"><label>Customer name<input id="order-customer" required maxlength="70" placeholder="Customer or business name"></label><label>Product<select id="order-product" required></select></label><div class="form-grid"><label>Quantity<input id="order-quantity" type="number" min="1" step="1" value="1" required></label><label>Unit price<input id="order-unit-price" type="text" readonly></label></div><div class="order-total-preview">Estimated total <strong id="order-total-preview">₹0.00</strong></div><p class="helper-text">Creating an order reserves stock by reducing the available quantity.</p><div class="form-actions"><button type="button" class="button button-light" id="order-cancel">Cancel</button><button class="button button-primary" type="submit">Create order</button></div></form></div></div>
+
+<div class="modal-backdrop" id="checkout-backdrop" hidden><div class="modal" role="dialog" aria-modal="true" aria-labelledby="checkout-title"><div class="modal-heading"><div><h2 id="checkout-title">Checkout</h2><p>Enter customer details to submit the order.</p></div><button class="icon-button" id="checkout-close" aria-label="Close">×</button></div>
+<form id="checkout-form"><label>Customer / business name<input id="checkout-customer" required maxlength="70" placeholder="Your name or business"></label><label>Email or phone (optional)<input id="checkout-contact" maxlength="100" placeholder="Contact details"></label><label>Delivery address<textarea id="checkout-address" rows="3" required maxlength="250" placeholder="Street, area, city"></textarea></label><div class="order-total-preview"><span>Items in order</span><strong id="checkout-items-count">0</strong></div><div class="order-total-preview"><span>Total (demo; no payment)</span><strong id="checkout-total">₹0.00</strong></div><div class="form-actions"><button type="button" class="button button-light" id="checkout-cancel">Back to cart</button><button class="button button-primary" type="submit">Place order</button></div></form></div></div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<script src="app.js"></script>
+</body></html>
